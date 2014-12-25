@@ -7,20 +7,20 @@ import Data.Maybe
 
 -- Could do input better, don't care
 input = 
-    [ tile 's'
-    , tile 'd'
-    , tile 'm'
-    , tileSingle 'n' 2
-    , tile 'z'
+    [ tile 's' 1
+    , tile 'd' 1
+    , tile 'm' 1
+    , tile 'n' 2
+    , tile 'z' 1
     , tileWord 'e' 2
-    , tile 'g'
-    , tile 's'
-    , tile 'i'
-    , tile 'e'
+    , tile 'g' 1
+    , tile 's' 1
+    , tile 'i' 1
+    , tile 'e' 1
     , tileWord 'y' 2
-    , tile 'r'
-    , tileSingle 'a' 3
-    , tile 'a' ]
+    , tile 'r' 1
+    , tile 'a' 3
+    , tile 'a' 1 ]
 
 main = do
     contents <- readFile "sowpods.txt"
@@ -106,11 +106,8 @@ letterValue (Alphabet 'z') = 10
 letterValue (Alphabet c) = error $ "Unexpected Alphabet character '" ++ [c] ++ "'"
 
 -- Easy constructors for tiles
-tile :: Char -> Tile
-tile c = Tile (Single 1) (Alphabet c)
-
-tileSingle :: Char -> Int -> Tile
-tileSingle c x = Tile (Single x) (Alphabet c)
+tile :: Char -> Int -> Tile
+tile c x = Tile (Single x) (Alphabet c)
 
 tileWord :: Char -> Int -> Tile
 tileWord c x = Tile (Word x) (Alphabet c)
@@ -135,15 +132,15 @@ getTileWordMultiplier (Tile multiplier _) = getWordMultiplier multiplier
 
 -- Gets overall word multiplier value for a set of letters
 getTileSetMultiplier :: TileSet -> Int
-getTileSetMultiplier = foldl (\acc letter -> acc * (getTileWordMultiplier letter)) 1
+getTileSetMultiplier = foldl' (\acc letter -> acc * (getTileWordMultiplier letter)) 1
 
 getTileSetValue :: TileSet -> Int
 getTileSetValue set = 
-    let baseValue = foldl (\acc x -> acc + getTileValue x) 0 set
+    let baseValue = foldl' (\acc x -> acc + getTileValue x) 0 set
         multiplier = getTileSetMultiplier set
 	in baseValue * multiplier
 
 getTileSetWord :: TileSet -> SortedWord
 getTileSetWord set = 
-    let word = foldl (\acc tile -> acc ++ [getTileChar tile]) "" set
+    let word = foldl' (\acc tile -> acc ++ [getTileChar tile]) "" set
     in sort word
