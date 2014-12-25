@@ -64,7 +64,7 @@ getWordFromDictionary word dict = fromJust (Map.lookup (sort word) dict)
 -- Our types! --
 
 data Alphabet = Alphabet Char deriving (Show)
-data Multiplier = None | Single Int | Word Int deriving (Show)
+data Multiplier = Single Int | Word Int deriving (Show)
 data Tile = Tile Multiplier Alphabet deriving (Show)
 type TileSet = [Tile]
 type Word = String
@@ -106,7 +106,7 @@ letterValue (Alphabet 'z') = 10
 letterValue (Alphabet c) = error $ "Unexpected Alphabet character '" ++ [c] ++ "'"
 
 tile :: Char -> Tile
-tile c = Tile None (Alphabet c)
+tile c = Tile (Single 1) (Alphabet c)
 
 tileSingle :: Char -> Int -> Tile
 tileSingle c x = Tile (Single x) (Alphabet c)
