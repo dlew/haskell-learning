@@ -25,27 +25,27 @@ input =
 main = do
     contents <- readFile "sowpods.txt"
     let dictionary = loadDictionary contents
-        best = findSingleBestWord (tail $ subsequences input) dictionary
-    putStrLn (show best)
+        validTileSets = findValidTileSets (tail $ subsequences input) dictionary
+        bestTileSet = findBestTileSet validTileSets
+        bestWord = getWordFromDictionary (getTileSetWord bestTileSet) dictionary
+        bestValue = getTileSetValue bestTileSet
+    putStrLn (show bestWord ++ " is worth " ++ (show bestValue) ++ " points")
 
--- Solver
+-- Solver (for single best word)
 
-findSingleBestWord :: [TileSet] -> Dictionary -> (Word, Int)
-findSingleBestWord sets dictionary = foldl' folder ("", 0) sets
-    where folder = (\acc set -> getBetterValue acc (getTileSetValueInDictionary set dictionary))
+-- Find all sets that have valid words in the dictionary
+findValidTileSets :: [TileSet] -> Dictionary -> [TileSet]
+findValidTileSets sets dict = filter f sets
+    where f = (\set -> isWordInDictionary (sort (getTileSetWord set)) dict)
 
-getBetterValue :: (Word, Int) -> (Word, Int) -> (Word, Int)
-getBetterValue (a, x) (b, y) =
-    if x > y
-        then (a, x)
-        else (b, y)
+findBestTileSet :: [TileSet] -> TileSet
+findBestTileSet sets = foldl' (\set acc -> compareTileSets set acc) [] sets
 
-getTileSetValueInDictionary :: TileSet -> Dictionary -> (Word, Int)
-getTileSetValueInDictionary set dictionary =
-    if isWordInDictionary word dictionary
-        then (getWordFromDictionary word dictionary, getTileSetValue set)
-        else ("", 0)
-    where word = getTileSetWord set
+compareTileSets :: TileSet -> TileSet -> TileSet
+compareTileSets set1 set2 =
+    if getTileSetValue set1 > getTileSetValue set2
+        then set1
+        else set2
 
 -- Dictionary
 
