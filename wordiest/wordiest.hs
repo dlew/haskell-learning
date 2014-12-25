@@ -105,6 +105,7 @@ letterValue (Alphabet 'y') = 4
 letterValue (Alphabet 'z') = 10
 letterValue (Alphabet c) = error $ "Unexpected Alphabet character '" ++ [c] ++ "'"
 
+-- Easy constructors for tiles
 tile :: Char -> Tile
 tile c = Tile (Single 1) (Alphabet c)
 
@@ -124,10 +125,13 @@ getTileValue (Tile _ c) = letterValue c
 getTileChar :: Tile -> Char
 getTileChar (Tile _ (Alphabet c)) = c
 
+getWordMultiplier :: Multiplier -> Int
+getWordMultiplier (Word n) = n
+getWordMultiplier _ = 1
+
 -- Return word multiplier portion of a letter
 getTileWordMultiplier :: Tile -> Int
-getTileWordMultiplier (Tile (Word n) _) = n
-getTileWordMultiplier (Tile _ _) = 1
+getTileWordMultiplier (Tile multiplier _) = getWordMultiplier multiplier
 
 -- Gets overall word multiplier value for a set of letters
 getTileSetMultiplier :: TileSet -> Int
